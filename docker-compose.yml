@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  # ---------------------------------------------
+  # Frontend: React Application (Client/Individual User UI)
+  # ---------------------------------------------
+  frontend:
+    build:
+      context: . # Xây dựng từ thư mục gốc chứa source React (Vite)
+      dockerfile: ./frontend/Dockerfile
+    ports:
+      - "3000:80" # Cổng 3000 bên ngoài map vào cổng 80 của Nginx
+    depends_on:
+      - backend-api # Frontend cần đợi Backend chạy trước
+    environment:
+      - VITE_API_URL=http://localhost:5000/api # Cấu hình biến môi trường kết nối API
+    restart: unless-stopped
+
+  # ---------------------------------------------
+  # Backend: ASP.NET Core C# Web API
+  # ---------------------------------------------
+  backend-api:
+    build:
+      context: ./src/backend-csharp-mock # Thư mục chứa mã nguồn C#
+      dockerfile: Dockerfile
+    ports:
+      - "5000:80" # Cổng 5000 bên ngoài map vào cổng 80 của ứng dụng ASP.NET
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=database;Port=5432;Database=MalwareDB;Username=admin;Password=secret
+    depends_on:
+      - database # Cần đợi DB lên
+    restart: unless-stopped
+
+  # ---------------------------------------------
+  # Database: PostgreSQL (Lưu trữ lịch sử, cấu hình, v.v...)
+  # ---------------------------------------------
+  database:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: MalwareDB
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Gắn volume để giữ dữ liệu
+    restart: always
+
+# Khai báo Volumes để không mất dữ liệu khi restart container
+volumes:
+  postgres_data:

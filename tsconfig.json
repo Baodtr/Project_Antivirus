@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    /* 1. Sửa lỗi Module: Dùng ESNext thay vì nodenext để tương thích với Vite */
+    "module": "ESNext",
+    "moduleResolution": "bundler", 
+    "target": "ESNext",
+
+    "types": ["node", "vite/client"],
+    "esModuleInterop": true,
+
+    "sourceMap": true,
+    
+    /* 2. Sửa lỗi allowImportingTsExtensions: 
+       Khi bật cái này, bắt buộc phải bật noEmit và tắt declaration */
+    "noEmit": true, 
+    "allowImportingTsExtensions": true, 
+    "declaration": false,
+    "declarationMap": false,
+
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+
+    "strict": true,
+    "jsx": "react-jsx",
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "skipLibCheck": true
+  }
+}
